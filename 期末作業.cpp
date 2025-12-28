@@ -1,8 +1,8 @@
 ﻿#include <iostream>
 #include <windows.h> // Sleep()
+#include <conio.h>   // _kbhit(), _getch()
 using namespace std;
 
-// 遊戲大小
 const int WIDTH = 10;
 const int HEIGHT = 20;
 
@@ -18,17 +18,16 @@ void initField() {
     for (int y = 0; y < HEIGHT; y++) {
         for (int x = 0; x < WIDTH; x++) {
             if (x == 0 || x == WIDTH - 1 || y == HEIGHT - 1)
-                field[y][x] = 1;  // 牆壁
+                field[y][x] = 1;  // 牆
             else
                 field[y][x] = 0;  // 空白
         }
     }
 }
 
-// 畫出場地
+// 畫場地
 void drawField() {
-    system("cls"); // 清畫面
-
+    system("cls");
     for (int y = 0; y < HEIGHT; y++) {
         for (int x = 0; x < WIDTH; x++) {
             if (field[y][x] == 1)
@@ -40,47 +39,75 @@ void drawField() {
     }
 }
 
-// 畫出方塊（直線 4 格）
+// 畫直線方塊（4 格）
 void drawBlock() {
     for (int i = 0; i < 4; i++) {
         field[blockY + i][blockX] = 1;
     }
 }
 
-// 清掉方塊（移動前用）
+// 清除方塊
 void clearBlock() {
     for (int i = 0; i < 4; i++) {
         field[blockY + i][blockX] = 0;
     }
 }
 
-// 檢查能不能往下
+// 能不能往下
 bool canMoveDown() {
-    if (blockY + 4 >= HEIGHT - 1)
-        return false;
-    return true;
+    return (blockY + 4 < HEIGHT - 1);
 }
 
-// 主程式
+// 能不能往左
+bool canMoveLeft() {
+    return (blockX - 1 > 0);
+}
+
+// 能不能往右
+bool canMoveRight() {
+    return (blockX + 1 < WIDTH - 1);
+}
+
 int main() {
     initField();
+    drawBlock();
+    drawField();
 
     while (true) {
+        // 鍵盤控制
+        if (_kbhit()) {
+            char key = _getch();
+            clearBlock();
+
+            if (key == 'a' || key == 'A') {
+                if (canMoveLeft())
+                    blockX--;
+            }
+            else if (key == 'd' || key == 'D') {
+                if (canMoveRight())
+                    blockX++;
+            }
+
+            drawBlock();
+            drawField();
+        }
+
+        // 自動下落
+        Sleep(300);
         clearBlock();
 
         if (canMoveDown())
             blockY++;
         else
-            break; // 碰到底，結束遊戲
+            break; // 碰到底
 
         drawBlock();
         drawField();
-
-        Sleep(300); // 控制下落速度
     }
 
     cout << "Game Over!" << endl;
     system("pause");
     return 0;
 }
+
 
