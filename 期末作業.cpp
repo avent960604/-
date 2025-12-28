@@ -1,20 +1,86 @@
-﻿// 期末作業.cpp : 此檔案包含 'main' 函式。程式會於該處開始執行及結束執行。
-//
+﻿#include <iostream>
+#include <windows.h> // Sleep()
+using namespace std;
 
-#include <iostream>
+// 遊戲大小
+const int WIDTH = 10;
+const int HEIGHT = 20;
 
-int main()
-{
-    std::cout << "Hello World!\n";
+// 遊戲場地
+int field[HEIGHT][WIDTH];
+
+// 方塊位置
+int blockX = WIDTH / 2;
+int blockY = 0;
+
+// 初始化場地
+void initField() {
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            if (x == 0 || x == WIDTH - 1 || y == HEIGHT - 1)
+                field[y][x] = 1;  // 牆壁
+            else
+                field[y][x] = 0;  // 空白
+        }
+    }
 }
 
-// 執行程式: Ctrl + F5 或 [偵錯] > [啟動但不偵錯] 功能表
-// 偵錯程式: F5 或 [偵錯] > [啟動偵錯] 功能表
+// 畫出場地
+void drawField() {
+    system("cls"); // 清畫面
 
-// 開始使用的提示: 
-//   1. 使用 [方案總管] 視窗，新增/管理檔案
-//   2. 使用 [Team Explorer] 視窗，連線到原始檔控制
-//   3. 使用 [輸出] 視窗，參閱組建輸出與其他訊息
-//   4. 使用 [錯誤清單] 視窗，檢視錯誤
-//   5. 前往 [專案] > [新增項目]，建立新的程式碼檔案，或是前往 [專案] > [新增現有項目]，將現有程式碼檔案新增至專案
-//   6. 之後要再次開啟此專案時，請前往 [檔案] > [開啟] > [專案]，然後選取 .sln 檔案
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            if (field[y][x] == 1)
+                cout << "#";
+            else
+                cout << " ";
+        }
+        cout << endl;
+    }
+}
+
+// 畫出方塊（直線 4 格）
+void drawBlock() {
+    for (int i = 0; i < 4; i++) {
+        field[blockY + i][blockX] = 1;
+    }
+}
+
+// 清掉方塊（移動前用）
+void clearBlock() {
+    for (int i = 0; i < 4; i++) {
+        field[blockY + i][blockX] = 0;
+    }
+}
+
+// 檢查能不能往下
+bool canMoveDown() {
+    if (blockY + 4 >= HEIGHT - 1)
+        return false;
+    return true;
+}
+
+// 主程式
+int main() {
+    initField();
+
+    while (true) {
+        clearBlock();
+
+        if (canMoveDown())
+            blockY++;
+        else
+            break; // 碰到底，結束遊戲
+
+        drawBlock();
+        drawField();
+
+        Sleep(300); // 控制下落速度
+    }
+
+    cout << "Game Over!" << endl;
+    system("pause");
+    return 0;
+}
+
